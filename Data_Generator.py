@@ -4,13 +4,13 @@ import h3
 import osmnx as ox
 from shapely import Polygon, MultiPolygon
 
-#USER DEFINED PRESETS///////////////////////////////////////////////////////////
+#presets to define 
 SaveFile = "Urban_Features_Scraper.json "
 dres = 7 #Default hex resolution for hex grabbing throughout the program
 out_json = [] #structured as [ City1{h3-, properties{}} City2{h3-, properties{}}]
 
 osm_tags = {
-    # Counting / point or area features
+    # Counting/point or area features
     'leisure': ['park', 'garden', 'playground'],
     'amenity': [
         'parking',
@@ -40,6 +40,7 @@ osm_tags = {
     'sidewalk': True
 }
 
+#list of cities to iterate through
 cities = {"New York City, NY",
         "Boston, MA",
         "Chicago, IL",
@@ -66,7 +67,7 @@ cities = {"New York City, NY",
 
 
 
-#MAIN FUNCTIONS/////////////////////////////////////////////////////////////////
+#main functions in iteration
 def h3_filler(city_name, hexres = dres):
     """
     returns list of h3's that fill city boundary
@@ -184,9 +185,6 @@ def scrape_features(h3x, city_name):
         }
 
     def make_hex_poly(subhex):
-        """
-        Makes a hexagonal polygon object at the specified hex coordinate
-        """
 
         bounds = h3.cell_to_boundary(subhex)
         bounds_corrected = [(lng, lat) for lat, lng in bounds]
@@ -199,7 +197,6 @@ def scrape_features(h3x, city_name):
 
     def update_dicts():
 
-
         for _, row in gdf.iterrows():
             for key in osm_tags:
                 val = row.get(key)
@@ -209,7 +206,6 @@ def scrape_features(h3x, city_name):
                 # out.add((val,key))
 
                 v1, v2 = val,key
-
 
                 if v1 in {"parking", "footway", "cycleway",
                           "garden", "playground", "park", "river",
@@ -270,7 +266,7 @@ def scrape_features(h3x, city_name):
 
 
 
-#ITERATING//////////////////////////////////////////////////////////////////////
+#iterating through cities and the hexes within them
 for city in cities:
     print(f"Scraping hexes in {city}")
 
@@ -286,7 +282,7 @@ for city in cities:
 
 
 
-#FILE SAVING////////////////////////////////////////////////////////////////////
+#file saving
 with open(SaveFile, 'w') as json_file:
         json.dump(out_json, json_file, indent=4)
         print("Complete")
